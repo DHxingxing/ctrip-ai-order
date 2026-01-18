@@ -8,8 +8,6 @@
 
 *   **跨城市兼容**：利用 `DynamicXmlLocator` 实时分析页面结构，自动适配不同城市的 UI 布局。
 *   **智能筛选器**：`SmartFilter` 支持正则匹配 (`resourceIdMatches`)，自动处理长列表滚动、折叠区域展开与回溯扫描。
-*   **OCR 辅助**：集成 `PaddleOCR`，用于处理日历日期等非标准控件的识别与点击。
-*   **容错机制**：内置多级查找策略 (ID -> Text -> XPath -> OCR)，确保流程稳定性。
 
 ## 🛠 环境要求
 
@@ -36,8 +34,6 @@ pip install -r requirements.txt
 | 库名称 | 推荐版本 | 用途 |
 | :--- | :--- | :--- |
 | `uiautomator2` | >= 2.16.0 | Android 自动化核心驱动 |
-| `paddleocr` | >= 2.6.0 | OCR 文字识别 (用于日期选择) |
-| `paddlepaddle` | >= 2.4.0 | OCR 深度学习框架支持 |
 | `lxml` | >= 4.9.0 | 高效 XML 解析 (用于页面结构分析) |
 
 ## 🏃‍♂️ 快速开始
@@ -64,8 +60,7 @@ pip install -r requirements.txt
 *   `smart_filter.py`: **智能筛选器**，核心模块。包含正则匹配、自动滚动、自动展开/回溯逻辑。
 *   `dynamic_xml_locator.py`: **动态定位器**，核心模块。负责实时解析 XML 树，智能寻找可点击元素。
 *   `select_city.py`: 城市选择逻辑 (支持拼音输入)。
-*   `select_time.py`: 日期选择逻辑 (坐标计算 + OCR)。
-*   `ocr_select.py`: OCR 辅助模块。
+*   `select_time.py`: 日期选择逻辑 (坐标计算)。
 
 ## ⚠️ 注意事项
 
