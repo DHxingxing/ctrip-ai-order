@@ -29,18 +29,24 @@ class SmartFilter:
             print(f"--- 🔄 扫描第 {i+1} 屏 ---")
             
             # 执行当前屏的匹配点击
-            self._process_current_screen(target_keywords)
+            # 返回值: layout_changed (bool) - 指示是否发生了展开操作
+            layout_changed = self._process_current_screen(target_keywords)
             
             # 检查是否全部完成
-            # 注意：有些关键词可能本来就不存在，所以不能强求 len相等 才退出
-            # 这里我们还是坚持滑到底，除非已经全找到了
             if len(self.processed_keywords) >= len(target_keywords):
                 print("🎉 所有目标都已找到并点击！")
                 break
             
-            # 滑动翻页
-            # 到底检测：如果滑不动了或者页面没变，就停止
-            # 简单起见，我们先按固定次数滑，或者检查底部文字
+            # 策略调整：如果发生了布局变化（点击了展开），我们不要急着翻页
+            # 而是应该“原地重试”甚至“往回找找”，防止新出现的内容被挤出屏幕
+            if layout_changed:
+                print("⚠️ 检测到页面展开，执行【回溯扫描】防止漏选...")
+                # 向上微滑 (把可能被顶上去的内容拉回来)
+                self.d.swipe(0.5, 0.4, 0.5, 0.6, duration=0.3)
+                time.sleep(1.0)
+                continue # 跳过本次翻页，重新扫描当前位置
+            
+            # 正常滑动翻页
             print("👇 向下滑动寻找剩余选项...")
             # 从屏幕 80% 处滑到 30% 处，幅度适中
             self.d.swipe(0.5, 0.8, 0.5, 0.3, duration=0.5)
@@ -54,7 +60,34 @@ class SmartFilter:
     def _process_current_screen(self, target_keywords):
         """
         处理当前屏幕上的所有选项
+        :return: bool 是否发生了“展开”操作
         """
+        has_expanded = False
+        
+        # --- 步骤 0: 先把所有的“展开”按钮点开 ---
+        # 很多选项藏在折叠区域里，必须先展开才能被 resourceIdMatches 抓到
+        try:
+            # 查找所有文本为“展开”的按钮
+            expand_btns = self.d(text="展开")
+            if expand_btns.exists:
+                print("📂 发现折叠区域，正在全部展开...")
+                # 遍历点击每一个展开按钮
+                for btn in expand_btns:
+                    try:
+                        # 只有当按钮在屏幕内才点
+                        if btn.info['bounds']['bottom'] < self.d.window_size()[1]:
+                            btn.click()
+                            has_expanded = True
+                            time.sleep(0.5) # 等待展开动画
+                    except:
+                        pass
+                if has_expanded:
+                    print("✅ 折叠区域已展开 (触发重扫机制)")
+                    return True # 立即返回，通知外层重扫，因为坐标全变了
+        except:
+            pass
+
+        # --- 步骤 1: 扫描选项 ---
         # 匹配所有 ID 以 car_testid_comp_filter_modal_item_ 开头的元素
         # 这是一个非常棒的特征，携程开发留下的“后门”
         try:

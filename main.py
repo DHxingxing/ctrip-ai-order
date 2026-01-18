@@ -7,7 +7,7 @@ from smart_filter import SmartFilter
 # ==========================================
 # 核心设置区域
 # ==========================================
-TARGET_CITY = "shanghai"  # 你想去的城市
+TARGET_CITY = "sanya"  # 你想去的城市
 PACKAGE_NAME = "ctrip.android.view.debug" # 携程的包名 (请确保和你手机里的一致)
 
 # ==========================================
@@ -88,7 +88,7 @@ def main():
 
         # 步骤 5: (新) 智能筛选车辆
         # 假设我们想要选这些条件（你可以随时改）
-        my_filters = ["送车上门", "非自助取还", "不限里程", "迎诚租车","上海飞扬租车"]
+        my_filters = ["送车上门", "自助取还", "不限里程", "积分当钱花", "身份证","星月租车"]
         
         print(f"🔎 进入列表页，准备进行筛选: {my_filters}")
         filter_bot = SmartFilter(d)
