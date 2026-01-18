@@ -89,3 +89,4 @@ def search_city_by_paste(city_pinyin, d):
     print("⚠️ 命中 P3 (保底)：未找到特定标签，盲点列表第一项。")
     d.click(0.5, 0.25)
 
+    
